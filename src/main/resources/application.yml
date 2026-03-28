@@ -1,6 +1,8 @@
 spring:
   application:
     name: sparkmind-agent
+  config:
+    import: optional:application-secret.yml
 server:
   port: 8123
   servlet:
@@ -23,6 +25,3 @@ knife4j:
   setting:
     language: zh_cn
 
-dashscope:
-  api-key: ${DASHSCOPE_API_KEY}   # ????????????????
-  model-name: qwen-max
