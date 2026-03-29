@@ -1,14 +1,15 @@
 package com.zeng.sparkmindagent.app;
 
 
+import com.zeng.sparkmindagent.chatMemory.RedisChatMemory;
 import com.zeng.sparkmindagent.utils.PromptService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
@@ -34,12 +35,12 @@ public class SparkmindApp {
     }
 
 
-    public SparkmindApp(ChatModel dashscopeChatModel) {
+    public SparkmindApp(ChatModel dashscopeChatModel, RedisTemplate<String, Object> redisTemplate) {
 
-        ChatMemory chatMemory = new InMemoryChatMemory();
+        ChatMemory redisChatMemory = new RedisChatMemory(redisTemplate);
         chatClient = ChatClient.builder(dashscopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
-                .defaultAdvisors(new MessageChatMemoryAdvisor(chatMemory))
+                .defaultAdvisors(new MessageChatMemoryAdvisor(redisChatMemory))
                 .build();
     }
 }

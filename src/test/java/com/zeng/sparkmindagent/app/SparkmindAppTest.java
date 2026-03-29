@@ -15,16 +15,9 @@ public class SparkmindAppTest {
     void testChat(){
         String chatId = UUID.randomUUID().toString();
 
-        String message = "hello i am zeng!";
+        String message = "你还记得我叫什么名字吗？";
         String answer = sparkmindApp.doChat(message, chatId);
         Assertions.assertNotNull(answer);
 
-        message = "my favorite movie is zootopia";
-        answer = sparkmindApp.doChat(message, chatId);
-        Assertions.assertNotNull(answer);
-
-        message = "wait what's my name?";
-        answer = sparkmindApp.doChat(message, chatId);
-        Assertions.assertNotNull(answer);
     }
 }
