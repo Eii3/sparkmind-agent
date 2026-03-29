@@ -12,12 +12,21 @@ public class SparkmindAppTest {
     private SparkmindApp sparkmindApp;
 
     @Test
-    void testChat(){
+    void testChat() {
         String chatId = UUID.randomUUID().toString();
 
         String message = "你还记得我叫什么名字吗？";
         String answer = sparkmindApp.doChat(message, chatId);
         Assertions.assertNotNull(answer);
-
     }
+
+    @Test
+    void doChatWithRag() {
+        String chatId = UUID.randomUUID().toString();
+        String message = "单元测试应该遵守什么原则？";
+        String answer = sparkmindApp.doChatWithRag(message, chatId);
+        Assertions.assertNotNull(answer);
+    }
+
+
 }

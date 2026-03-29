@@ -1,14 +1,18 @@
 package com.zeng.sparkmindagent.app;
 
 
+import com.zeng.sparkmindagent.advisor.MyLoggerAdvisor;
 import com.zeng.sparkmindagent.chatMemory.RedisChatMemory;
 import com.zeng.sparkmindagent.utils.PromptService;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +24,26 @@ public class SparkmindApp {
 
     private static final String SYSTEM_PROMPT = PromptService.SYSTEM_PROMPT;
     private final ChatClient chatClient;
+
+    @Resource
+    private VectorStore sparkmindAppVectorStore;
+
+    public String doChatWithRag(String message, String chatId) {
+        ChatResponse chatResponse = chatClient
+                .prompt()
+                .user(message)
+                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+
+                .advisors(new MyLoggerAdvisor())
+
+                .advisors(new QuestionAnswerAdvisor(sparkmindAppVectorStore))
+                .call()
+                .chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("content: {}", content);
+        return content;
+    }
 
     public String doChat(String message, String chatId){
         ChatResponse response = chatClient
